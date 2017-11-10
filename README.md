@@ -1,6 +1,6 @@
-# rizhi
+# dailyrecord
 
-> rizhi
+> dailyrecord
 
 ## Build Setup
 
