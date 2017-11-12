@@ -9,6 +9,7 @@
     </el-dialog>
     <el-table :data="datab"
               width="100%"
+              max-height="500"
               stripe
               border
               ref="multipleTable">
@@ -64,6 +65,15 @@ export default {
           this.loadlist()
           this.$refs.form.reset()
         })
+    },
+    deleteRow (index, rows) {
+      var id = rows[index]._id.$oid
+      this.$axios.delete('http://qianjia.space:8000/logs' + '/' + id)
+        .then((res) => {
+          rows.splice(index, 1)
+          this.loadlist()
+        })
+      this.$message('删除成功')
     }
   },
   mounted () {
