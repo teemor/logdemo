@@ -15,7 +15,7 @@
                v-model="editlog"
                 >
         <edit-log @cancel-dialog="editlog=false"
-               @edita="edita" :data="formdata"></edit-log>
+               @edita="edita" :data="formdata"  ref="form"></edit-log>
     </el-dialog>
     <el-table :data="datab"
               width="100%"
@@ -103,11 +103,16 @@ export default {
     edita (model) {
       // var id = rows[index]._id.$oid
       console.log('http://qianjia.space:8000/logs' + '/' + model._id.$oid)
-      console.log(model)
-      this.$axios.put('http://qianjia.space:8000/logs' + '/' + model._id.$oid, model)
+      console.log('我获取的是传过来的值', model)
+      let json = {
+        'summary': this.formdata.summary,
+        'content': this.formdata.content,
+        'user': this.formdata.user
+      }
+      this.$axios.put('http://qianjia.space:8000/logs' + '/' + model._id.$oid, json)
       .then((res) => {
         this.editlog = false
-        this.refs.form.reset()
+        // this.refs.form.reset()
       })
     }
   },

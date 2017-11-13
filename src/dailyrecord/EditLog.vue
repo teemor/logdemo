@@ -63,9 +63,9 @@ export default {
         }
       })
     },
-    hh: function () {
-      console.log('父组件能获取到啥啊', this.data, this.formdata)
-    },
+    // hh: function () {
+    //   console.log('父组件能获取到的', this.data, this.formdata)
+    // },
     initModel: function () {
       return {
         content: '',
