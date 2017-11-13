@@ -1,11 +1,21 @@
 <template>
   <div id="main">
     <el-button @click="addlog = true">新增</el-button>
+    <!-- 新增 -->
     <el-dialog title="新增日志"
-               :visible.sync="addlog">
-      <add-log @cancel-dialog="addlog=false"
+               :visible.sync="addlog"
+               v-model="datab">
+      <add-log @cancel-dialog="addmodel=false"
                @submit-btn="addlogl"
                ref="form"></add-log>
+    </el-dialog>
+    <!-- 修改 -->
+    <el-dialog title="修改日志"
+               :visible.sync="editlog"
+               v-model="editlog"
+                >
+        <edit-log @cancel-dialog="editlog=false"
+               @edita="edita" :data="formdata"></edit-log>
     </el-dialog>
     <el-table :data="datab"
               width="100%"
@@ -31,7 +41,7 @@
                        width="405">
         <template slot-scope="scope">
           <el-button size="mini"
-                     @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                     @click="edit(datab[scope.$index])">编辑</el-button>
           <el-button size="mini"
                      type="danger"
                      @click.native.prevent="deleteRow(scope.$index, datab)">删除</el-button>
@@ -42,11 +52,23 @@
 </template>
 <script>
 import AddLog from '@/dailyrecord/AddLog'
+import EditLog from '@/dailyrecord/EditLog'
 export default {
   data () {
     return {
       datab: [],
-      addlog: false
+      addlog: false,
+      editlog: false,
+      addtitle: '',
+      edittitle: '',
+      addmodel: false,
+      editmodel: false,
+      formdata: {
+        content: '',
+        summary: '',
+        user: '',
+        id: ''
+      }
     }
   },
   methods: {
@@ -54,13 +76,11 @@ export default {
       this.$axios.get('http://qianjia.space:8000/logs')
         .then(res => {
           this.datab = res.data
-          console.log('获取一下吧', this.datab)
         })
     },
     addlogl (formdata) {
       this.$axios.post('http://qianjia.space:8000/logs', formdata)
         .then((res) => {
-          console.log('再获取一下吧', res.data)
           this.addlog = false
           this.loadlist()
           this.$refs.form.reset()
@@ -74,14 +94,30 @@ export default {
           this.loadlist()
         })
       this.$message('删除成功')
+    },
+    edit (row) {
+      this.formdata = row
+      this.editlog = true
+      //  赋值
+    },
+    edita (model) {
+      // var id = rows[index]._id.$oid
+      console.log('http://qianjia.space:8000/logs' + '/' + model._id.$oid)
+      console.log(model)
+      this.$axios.put('http://qianjia.space:8000/logs' + '/' + model._id.$oid, model)
+      .then((res) => {
+        this.editlog = false
+        this.refs.form.reset()
+      })
     }
   },
+  // 初始化
   mounted () {
     this.loadlist()
-    this.formdata = this.datab
+    // this.formdata = this.datab
   },
   components: {
-    AddLog
+    AddLog, EditLog
   }
 }
 </script>

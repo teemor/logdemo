@@ -1,4 +1,5 @@
 <template>
+<div v-if="formdata">
   <el-form :model="formdata"
            :rules="rules"
            ref="forma">
@@ -23,6 +24,7 @@
                  @click="$emit('cancel-dialog')">取消</el-button>
     </el-form-item>
   </el-form>
+</div>
 </template>
 <script>
 export default {
@@ -51,6 +53,9 @@ export default {
       this.formdata.user = ''
       this.formdata.content = ''
       this.formdata.summary = ''
+    },
+    setlog: function () {
+      this.formdata = this.data
     }
   }
 }
