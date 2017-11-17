@@ -5,9 +5,13 @@
     <el-dialog title="新增日志"
                :visible.sync="addlog"
                v-model="datab">
-      <add-log @cancel-dialog="addmodel=false"
+      <!-- <add-log @cancel-dialog="addmodel=false"
                @submit-btn="addlogl"
-               ref="form"></add-log>
+               ref="form"></add-log> --> 
+                 <edit-log @cancel-dialog="addmodel=false"
+               @edita="addlogl"
+               ref="form"></edit-log>
+
     </el-dialog>
     <!-- 修改 -->
     <el-dialog title="修改日志"
@@ -112,7 +116,6 @@ export default {
       this.$axios.put('http://qianjia.space:8000/logs' + '/' + model._id.$oid, json)
       .then((res) => {
         this.editlog = false
-        // this.refs.form.reset()
       })
     }
   },

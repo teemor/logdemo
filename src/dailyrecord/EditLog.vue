@@ -51,7 +51,6 @@ export default {
   watch: {
     data: function () {
       this.setlog()
-      console.log('watch')
     }
   },
   methods: {
