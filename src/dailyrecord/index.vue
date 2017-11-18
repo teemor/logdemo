@@ -78,7 +78,7 @@ export default {
   methods: {
     loadlist () {
       this.$axios.get('http://qianjia.space:8000/logs')
-        .then(res => {
+        .then(((res)) => {
           this.datab = res.data
         })
     },
@@ -95,7 +95,7 @@ export default {
       this.$axios.delete('http://qianjia.space:8000/logs' + '/' + id)
         .then((res) => {
           rows.splice(index, 1)
-          this.loadlist()
+          // this.loadlist()
         })
       this.$message('删除成功')
     },
