@@ -1,6 +1,8 @@
 <template>
   <div id="main">
     <el-button @click="addlog = true">新增</el-button>
+    {{ hh }}
+    <test @submit="wo"></test>
     <!-- 新增 -->
     <el-dialog title="新增日志"
                :visible.sync="addlog"
@@ -28,21 +30,27 @@
               border
               ref="multipleTable">
       <el-table-column type="selection"
-                       width="55">
+                       width="55"
+                       align="center"
+                       fixed>
       </el-table-column>
       <el-table-column label="日期"
                        width="350"
-                       prop="summary">
+                       prop="date"
+                      align="center">
       </el-table-column>
       <el-table-column label="人员"
                        width="250"
-                       prop="user"></el-table-column>
+                       prop="summary"
+                      align="center"></el-table-column>
       <el-table-column label="标题"
                        prop="content"
-                       width="840">
+                       width="840"
+                      align="center">
       </el-table-column>
       <el-table-column label="操作"
-                       width="405">
+                       width="405"
+                        align="center">
         <template slot-scope="scope">
           <el-button size="mini"
                      @click="edit(datab[scope.$index])">编辑</el-button>
@@ -57,30 +65,39 @@
 <script>
 import AddLog from '@/dailyrecord/AddLog'
 import EditLog from '@/dailyrecord/EditLog'
+import test from '@/dailyrecord/test'
+import {mapState} from 'vuex'
 export default {
   data () {
     return {
-      datab: [],
       addlog: false,
       editlog: false,
-      addtitle: '',
-      edittitle: '',
       addmodel: false,
       editmodel: false,
       formdata: {
         content: '',
+        date: '',
         summary: '',
-        user: '',
         id: ''
-      }
+      },
+      hh:''
     }
   },
+  computed: {
+    ...mapState({
+      datab: 'datab'
+    })
+  },
   methods: {
-    loadlist () {
-      this.$axios.get('http://qianjia.space:8000/logs')
-        .then(((res)) => {
-          this.datab = res.data
-        })
+    // loadlist () {
+    //   this.$axios.get('http://qianjia.space:8000/logs')
+    //     .then((res) => {
+    //       this.datab = res.data
+    //     })
+    // },
+    loadlist:function(){
+      this.$store.dispatch('initPage')
+      console.log('我到了吗', this.datab)
     },
     addlogl (formdata) {
       this.$axios.post('http://qianjia.space:8000/logs', formdata)
@@ -91,15 +108,21 @@ export default {
         })
     },
     deleteRow (index, rows) {
-      var id = rows[index]._id.$oid
+      this.$confirm('此操作将永久删除该文件，是否继续？','提示',{
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(()=>{
+        var id = rows[index]._id.$oid
       this.$axios.delete('http://qianjia.space:8000/logs' + '/' + id)
         .then((res) => {
           rows.splice(index, 1)
-          // this.loadlist()
         })
       this.$message('删除成功')
+      })
+   
     },
     edit (row) {
+      console.log('rwe', this.row)
       this.formdata = row
       this.editlog = true
       //  赋值
@@ -109,14 +132,22 @@ export default {
       console.log('http://qianjia.space:8000/logs' + '/' + model._id.$oid)
       console.log('我获取的是传过来的值', model)
       let json = {
-        'summary': this.formdata.summary,
+        'date': this.formdata.date,
         'content': this.formdata.content,
-        'user': this.formdata.user
+        'summary': this.formdata.summary
       }
+
       this.$axios.put('http://qianjia.space:8000/logs' + '/' + model._id.$oid, json)
       .then((res) => {
+        console.log('日期',this.formdata.date)
+         this.loadlist()
+        console.log('数据',res.data)
         this.editlog = false
+       
       })
+    },
+    wo (gg){
+     this.hh = gg
     }
   },
   // 初始化
@@ -125,7 +156,7 @@ export default {
     // this.formdata = this.datab
   },
   components: {
-    AddLog, EditLog
+    AddLog, EditLog, test
   }
 }
 </script>

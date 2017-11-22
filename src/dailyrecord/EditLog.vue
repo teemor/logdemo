@@ -1,11 +1,11 @@
 <template>
-  <div v-if="formdata">
+  <div>
     <el-form :model="formdata"
              :rules="rules"
              ref="hh">
       <el-form-item label="人员"
-                    prop="user">
-        <el-input v-model="formdata.user"></el-input>
+                    prop="summary">
+        <el-input v-model="formdata.summary"></el-input>
       </el-form-item>
       <el-form-item label="标题"
                     prop="content">
@@ -13,16 +13,16 @@
                   v-model="formdata.content"></el-input>
       </el-form-item>
       <el-form-item label="日期"
-                    prop="summary">
-        <el-input type="textarea"
-                  v-model="formdata.summary"></el-input>
+                    prop="date">
+      <el-date-picker type="date" placeholder="选择日期" v-model="formdata.date">
+      </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary"
                    @click="edita">确定</el-button>
         <el-button type="cancel"
                    @click="$emit('cancel-dialog')">取消</el-button>
-        <el-button @click="hh">ai</el-button>
+        <!-- <el-button @click="hh">ai</el-button> -->
       </el-form-item>
     </el-form>
   </div>
@@ -34,30 +34,32 @@ export default {
   },
   data () {
     return {
-      formdata: this.setlog(),
+      formdata: {},
       rules: {
         content: { required: true, message: '请输入标题', trigger: 'blur' },
-        user: { required: true, message: '请输入内容', trigger: 'blur' }
+        summary: { required: true, message: '请输入内容', trigger: 'blur' },
+        date: { type:'date', required:true, message: '请输入日期', trigger: 'blur'}
       }
     }
   },
   mounted () {
     if (this.data && Object.keys(this.data).length) {
-      this.setlog()
+          this.formdata = this.data
     } else {
       this.formdata = this.initModel()
     }
   },
   watch: {
     data: function () {
-      this.setlog()
+          this.formdata = this.data
     }
   },
   methods: {
     edita: function () {
       this.$refs.hh.validate(valid => {
         if (valid) {
-          console.log(this.formdata)
+          // let date =new Date(this.formdata.date)
+          // console.log(date)
           this.$emit('edita', this.formdata)
         }
       })
@@ -68,15 +70,12 @@ export default {
     initModel: function () {
       return {
         content: '',
-        summary: '',
+        date: '',
         user: ''
       }
     },
     reset: function () {
       this.formdata = this.initModel()
-    },
-    setlog: function () {
-      this.formdata = this.data
     }
   }
 }
