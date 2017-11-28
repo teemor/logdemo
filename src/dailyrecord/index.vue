@@ -5,20 +5,17 @@
     <test @submit="wo"></test>
     <!-- 新增 -->
     <el-dialog title="新增日志"
-               :visible.sync="addlog"
-               v-model="datab">
+               :visible.sync="addlog">
       <!-- <add-log @cancel-dialog="addmodel=false"
                @submit-btn="addlogl"
                ref="form"></add-log> --> 
                  <edit-log @cancel-dialog="addmodel=false"
-               @edita="addlogl"
+               @edita="close"
                ref="form"></edit-log>
-
     </el-dialog>
     <!-- 修改 -->
     <el-dialog title="修改日志"
                :visible.sync="editlog"
-               v-model="editlog"
                 >
         <edit-log @cancel-dialog="editlog=false"
                @edita="edita" :data="formdata"  ref="form"></edit-log>
@@ -66,7 +63,9 @@
 import AddLog from '@/dailyrecord/AddLog'
 import EditLog from '@/dailyrecord/EditLog'
 import test from '@/dailyrecord/test'
-import {mapState} from 'vuex'
+// import {mapState} from 'vuex'
+import {mapGetters} from 'vuex'
+import request from '@/api/api'
 export default {
   data () {
     return {
@@ -74,38 +73,22 @@ export default {
       editlog: false,
       addmodel: false,
       editmodel: false,
-      formdata: {
-        content: '',
-        date: '',
-        summary: '',
-        id: ''
-      },
-      hh:''
+      hh:'',
+      formdata:{}
     }
   },
   computed: {
-    ...mapState({
-      datab: 'datab'
+    // ...mapState({
+    //   datab: 'datab'
+    // })
+    ...mapGetters({
+      datab: 'datab',
+      modifyModel: 'modifyModel'
     })
   },
   methods: {
-    // loadlist () {
-    //   this.$axios.get('http://qianjia.space:8000/logs')
-    //     .then((res) => {
-    //       this.datab = res.data
-    //     })
-    // },
     loadlist:function(){
       this.$store.dispatch('initPage')
-      console.log('我到了吗', this.datab)
-    },
-    addlogl (formdata) {
-      this.$axios.post('http://qianjia.space:8000/logs', formdata)
-        .then((res) => {
-          this.addlog = false
-          this.loadlist()
-          this.$refs.form.reset()
-        })
     },
     deleteRow (index, rows) {
       this.$confirm('此操作将永久删除该文件，是否继续？','提示',{
@@ -113,38 +96,25 @@ export default {
         cancelButtonText: '取消'
       }).then(()=>{
         var id = rows[index]._id.$oid
-      this.$axios.delete('http://qianjia.space:8000/logs' + '/' + id)
+        this.$store.dispatch('del', id)
         .then((res) => {
           rows.splice(index, 1)
         })
       this.$message('删除成功')
       })
-   
+    },
+    close () {
+      this.addlog = false
+    },
+    edita (){
+      this.editlog = false
     },
     edit (row) {
-      console.log('rwe', this.row)
+      this.$store.dispatch('editid' ,row._id.$oid)
       this.formdata = row
       this.editlog = true
+      console.log('rwe', row)
       //  赋值
-    },
-    edita (model) {
-      // var id = rows[index]._id.$oid
-      console.log('http://qianjia.space:8000/logs' + '/' + model._id.$oid)
-      console.log('我获取的是传过来的值', model)
-      let json = {
-        'date': this.formdata.date,
-        'content': this.formdata.content,
-        'summary': this.formdata.summary
-      }
-
-      this.$axios.put('http://qianjia.space:8000/logs' + '/' + model._id.$oid, json)
-      .then((res) => {
-        console.log('日期',this.formdata.date)
-         this.loadlist()
-        console.log('数据',res.data)
-        this.editlog = false
-       
-      })
     },
     wo (gg){
      this.hh = gg
